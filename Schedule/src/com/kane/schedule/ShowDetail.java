@@ -29,7 +29,7 @@ import android.widget.Toast;
 public class ShowDetail extends Activity {
 	private String classTitle, classAddress;
 	private SimpleAdapter adapter;
-	private List<Map<String, Object>> data,listAdapter;
+	private List<Map<String, Object>> data, listAdapter;
 	private SQLiteDatabase db = null;
 	private Cursor cursor = null;
 	String setDay = null;
@@ -37,9 +37,7 @@ public class ShowDetail extends Activity {
 	Context mContext = null;
 	String day = "";
 	private ListView list;
-	private String classSelected;
-
-
+	private String classSelected, timeSelected;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +97,7 @@ public class ShowDetail extends Activity {
 				new int[] { R.id.classTitle, R.id.classAddress, R.id.classTime });
 
 		list.setAdapter(adapter);
-		
-		
-		
+
 		/**
 		 * 设置长按监听弹出上下文菜单
 		 */
@@ -111,7 +107,13 @@ public class ShowDetail extends Activity {
 					int position, long id) {
 				// TODO Auto-generated method stub
 				TextView c = (TextView) view.findViewById(R.id.classTitle);
-				classSelected = c.getText().toString() + position;
+				classSelected = c.getText().toString();
+				c = (TextView) view.findViewById(R.id.classTime);
+				timeSelected = c.getText().toString().substring(5, 10);
+
+				System.out.println(classSelected);
+				System.out.println(timeSelected);
+
 				list.showContextMenu();
 				return true;
 			}
@@ -170,11 +172,9 @@ public class ShowDetail extends Activity {
 	{
 
 		setTitle("点击了长按菜单里面的第" + item.getItemId() + "个项目");
-		
+
 		int selectedPosition = item.getItemId();// 获取点击了第几行
 
-		System.out.println(selectedPosition);
-		
 		switch (item.getItemId()) {
 		case 0:
 			// 删除数据
@@ -206,7 +206,7 @@ public class ShowDetail extends Activity {
 	 * 获取数据库中的数据
 	 */
 	private List<Map<String, Object>> getData() {
-		
+
 		List<Map<String, Object>> listAdapter = new ArrayList<Map<String, Object>>();
 		MyDatabase dbHelper = new MyDatabase(ShowDetail.this, "classList_db",
 				null, 1);
