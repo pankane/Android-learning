@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+<TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:gravity="center"
+    android:textSize="20dp"
+    android:text="添加新的课程"
+    
+    ></TextView>
+
+
+<EditText 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="left"
+    android:hint="请输入课程名称"
+    android:id="@+id/subjectname"
+    android:singleLine="true"
+    
+    />
+
+<EditText 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="left"
+    android:hint="请输入上课地点"
+    android:id="@+id/address"
+    android:singleLine="true"
+ 
+    
+    />
+<EditText 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="left"
+    android:hint="请输入课程开始时间"
+    android:id="@+id/startHour"
+    android:singleLine="true"
+ 
+    
+    />
+<EditText 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="left"
+    android:hint="请输入课程结束时间"
+    android:id="@+id/endHour"
+    android:singleLine="true"
+ 
+    
+    />
+
+
+
+
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center" >
+    
+    <Button 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/submitClass"
+    android:text="确认"/>
+
+<Button 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/cancelClass"
+    android:text="取消"/>
+    
+</LinearLayout>
+
+
+</LinearLayout>
