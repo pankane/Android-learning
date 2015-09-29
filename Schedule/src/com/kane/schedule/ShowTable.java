@@ -13,13 +13,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 public class ShowTable extends Activity {
 	private ListView listView;
-	private SimpleAdapter adapter;
+	private SpecialAdapter adapter=null;
 	private List<Map<String, Object>> data;
 	private SQLiteDatabase db = null;
 	private Cursor cursor = null;
@@ -35,8 +38,8 @@ public class ShowTable extends Activity {
 		setContentView(R.layout.activity_show_table);// 加载首页显示一周课程
 		listView = (ListView) this.findViewById(R.id.daylist);// 显示一周列表
 		data = getData();
-		adapter = new SimpleAdapter(ShowTable.this, data,
-				R.layout.activity_show_table, new String[] { "day", "morning",
+		adapter = new SpecialAdapter(ShowTable.this, data,
+				R.layout.main_list_item, new String[] { "day", "morning",
 						"afternoon", "evening" }, new int[] { R.id.day,
 						R.id.morning, R.id.afternoon, R.id.evening });
 		// adapter.notifyDataSetChanged();
@@ -61,7 +64,40 @@ public class ShowTable extends Activity {
 			}
 		});
 
-		//
+		/**
+		 * 点击备份数据
+		 */
+		Button backup = (Button) findViewById(R.id.dataBackup);
+		backup.setOnClickListener(new OnClickListener() {
+
+			// 传递周几给到下个界面
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+			dataBackup();
+			Toast.makeText(ShowTable.this, "数据已备份到ScheduleBackup目录下", Toast.LENGTH_SHORT).show();
+				 
+			}
+		});
+		
+		/**
+		 * 点击恢复数据
+		 */
+		Button restore = (Button) findViewById(R.id.dataRestore);
+		restore.setOnClickListener(new OnClickListener() {
+
+			// 传递周几给到下个界面
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+			dataRecover();
+			
+	
+			ShowTable.this.onCreate(null);
+			Toast.makeText(ShowTable.this, "数据已恢复", Toast.LENGTH_SHORT).show();
+				 
+			}
+		});
 
 	}
 
@@ -100,7 +136,7 @@ public class ShowTable extends Activity {
 					if (classHour < 12) {
 						// 判断早成是否超过一节课，如果是都要显示在早上列中，设置flag帮助判断
 						if (flagMorning) {
-							map.put("morning", map.get("morning") + ";"
+							map.put("morning", map.get("morning") + "\n"
 									+ classTitle);
 						} else {
 							map.put("morning", classTitle); // 放入课程名称
@@ -109,7 +145,7 @@ public class ShowTable extends Activity {
 					} else if (classHour >= 12 && classHour < 18) {
 						// 判断早上是否超过一节课，如果是都要显示在早上列中，设置flag帮助判断
 						if (flagAfternoon) {
-							map.put("afternoon", map.get("afternoon") + ";"
+							map.put("afternoon", map.get("afternoon") + "\n"
 									+ classTitle);
 						} else {
 							map.put("afternoon", classTitle); // 放入课程名称
@@ -119,7 +155,7 @@ public class ShowTable extends Activity {
 					} else {
 						// 判断晚上是否超过一节课，如果是都要显示在早上列中，设置flag帮助判断
 						if (flagEvening) {
-							map.put("evening", map.get("evening") + ";"
+							map.put("evening", map.get("evening") + "\n"
 									+ classTitle);
 						} else {
 							map.put("evening", classTitle); // 放入课程名称
@@ -146,4 +182,24 @@ public class ShowTable extends Activity {
 		onCreate(null);
 
 	}
+	
+
+
+
+
+	
+
+//数据恢复
+ private void dataRecover() {
+     // TODO Auto-generated method stub
+     new BackupTask(this).execute("restroeDatabase");
+ }
+
+ // 数据备份
+ private void dataBackup() {
+     // TODO Auto-generated method stub
+     new BackupTask(this).execute("backupDatabase");
+ }
+
+	
 }

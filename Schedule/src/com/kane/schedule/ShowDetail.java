@@ -26,9 +26,13 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
+
+
 public class ShowDetail extends Activity {
 	private String classTitle, classAddress;
-	private SimpleAdapter adapter;
+	private SpecialAdapter adapter=null;
 	private List<Map<String, Object>> data, listAdapter;
 	private SQLiteDatabase db = null;
 	private Cursor cursor = null;
@@ -89,7 +93,7 @@ public class ShowDetail extends Activity {
 		list = (ListView) findViewById(R.id.classDetaillist);
 		// 生成动态数组，加入数据
 		data = getData();
-		adapter = new SimpleAdapter(
+		adapter = new SpecialAdapter(
 				ShowDetail.this,
 				data,
 				R.layout.list_item,
@@ -111,9 +115,6 @@ public class ShowDetail extends Activity {
 				c = (TextView) view.findViewById(R.id.classTime);
 				timeSelected = c.getText().toString().substring(5, 10);
 
-				System.out.println(classSelected);
-				System.out.println(timeSelected);
-
 				list.showContextMenu();
 				return true;
 			}
@@ -130,12 +131,12 @@ public class ShowDetail extends Activity {
 					ContextMenuInfo menuInfo) {
 				// TODO Auto-generated method stub
 
-				menu.setHeaderTitle("请选择您要对" + classSelected + "完成的操作");
+				menu.setHeaderTitle("是否删除 [" + classSelected + "] ?");
 
 				menu.add(0, 0, 0, "删除");
 
-				menu.add(0, 1, 1, "修改");
-				menu.add(0, 2, 2, "取消并返回课程列表");
+				menu.add(0, 1, 1, "取消");
+				
 
 			}
 
@@ -178,20 +179,19 @@ public class ShowDetail extends Activity {
 		switch (item.getItemId()) {
 		case 0:
 			// 删除数据
-			Toast.makeText(ShowDetail.this, "删除", Toast.LENGTH_SHORT).show();
+			
 			data.remove(selectedPosition);
 			adapter.notifyDataSetChanged();
 			list.invalidate();
+			deleteData(classSelected, timeSelected, day);
+			Toast.makeText(ShowDetail.this, "删除完成", Toast.LENGTH_SHORT).show();
 			break;
 
 		case 1:
-			// 修改操作
-			Toast.makeText(ShowDetail.this, "修改", Toast.LENGTH_SHORT).show();
+			// 取消操作
+		
 			break;
 
-		case 2:
-			// 取消操作
-			break;
 
 		default:
 			break;
@@ -199,6 +199,24 @@ public class ShowDetail extends Activity {
 
 		return super.onContextItemSelected(item);
 
+	}
+
+	/**
+	 * 删除选择的课程
+	 * 
+	 * @param classTitle
+	 * @param startTime
+	 * @param day
+	 */
+	private void deleteData(String classTitle, String startTime, String day) {
+		MyDatabase dbHelper = new MyDatabase(ShowDetail.this, "classList_db",
+				null, 1);
+		// 得到一个可写的SQLiteDatabase对象
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		day = "周" + day;
+		db.delete("classTable", "day='" + day + "' and classTitle='"
+				+ classTitle + "' and startTime='" + startTime + "'", null);
+		db.close();
 	}
 
 	/**
@@ -239,7 +257,6 @@ public class ShowDetail extends Activity {
 	/**
 	 * 当返回到该页面是刷新数据
 	 */
-
 	@Override
 	protected void onResume() {
 		super.onResume();
