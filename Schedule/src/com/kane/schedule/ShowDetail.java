@@ -181,6 +181,7 @@ public class ShowDetail extends Activity {
 			// É¾³ýÊý¾Ý
 			
 			data.remove(selectedPosition);
+			
 			adapter.notifyDataSetChanged();
 			list.invalidate();
 			deleteData(classSelected, timeSelected, day);

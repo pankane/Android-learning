@@ -112,6 +112,7 @@ public class AddNew extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				c = Calendar.getInstance();
+				
 				/**
 				 * 实例化一个TimePickerDialog的对象
 				 * 第二个参数是一个TimePickerDialog.OnTimeSetListener匿名内部类

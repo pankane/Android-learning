@@ -17,7 +17,9 @@
     android:layout_height="wrap_content" 
     android:textSize="20dip" 
     android:layout_width="fill_parent" 
+    android:textColor="#5ab963"
     android:id="@+id/classTitle"
+   
     />
 
 
@@ -26,6 +28,7 @@
 	android:layout_height="wrap_content" 
 	android:layout_width="fill_parent" 
 	android:layout_below="@+id/classTitle" 
+
 	android:id="@+id/classAddress"
 	/>
 <TextView 
@@ -33,6 +36,7 @@
 	android:layout_height="wrap_content" 
 	android:layout_width="fill_parent" 
 	android:layout_below="@+id/classAddress" 
+	
 	android:id="@+id/classTime"
 	/>
 
