@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:descendantFocusability="blocksDescendants" >
+    <TextView
+            android:id="@+id/day"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+         android:background="@drawable/textview_shape"
+            android:layout_weight="1.2"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:maxLines="3"
+            android:minLines="3"
+            android:ellipsize="end"
+            android:text="星期" />
+        <TextView
+            android:id="@+id/morning"
+            android:background="@drawable/textview_shape"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:maxLines="3"
+            
+            android:minLines="3"
+            android:ellipsize="end"
+            android:text="早上" />
+
+        <TextView
+            android:id="@+id/afternoon"
+            android:background="@drawable/textview_shape"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+           android:gravity="center"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:minLines="3"
+            android:text="下午" />
+
+        <TextView
+            android:id="@+id/evening"
+            android:background="@drawable/textview_shape"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+           android:gravity="center"
+            android:layout_weight="1"
+            android:textSize="18sp"
+             android:maxLines="3"
+            android:minLines="3"
+            android:ellipsize="end"
+            android:text="晚上" />
+
+</LinearLayout>
