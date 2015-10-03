@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
@@ -47,9 +48,11 @@ public class ShowDetail extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mContext = this;
+		
+//		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setTitle("单日课程明细");
 		setContentView(R.layout.activity_show_detail);
+		mContext = this;
 		TextView title = (TextView) this.findViewById(R.id.title);
 		Bundle bundle = this.getIntent().getExtras();
 

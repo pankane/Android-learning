@@ -1,22 +1,31 @@
 package com.kane.schedule;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.kane.memo.GetCurrentDate;
+import com.kane.memo.MemoNew;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,47 +35,54 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ShowTable extends Activity implements
 		android.view.View.OnClickListener {
 	private ListView listView;
-private List<View> mViews = new ArrayList<View>();// 用来存放Tab01-03
-
-	
+	private List<View> mViews = new ArrayList<View>();// 用来存放Tab01-03
+	private TextView tvMemoTitleDate, tvMemoTitleWeek,tvMemoTitleTime;
 	private Cursor cursor = null;
-	Context mContext = null;
+	private Context mContext = null;
 
-	String[] dayList = { "周一", "周二", "周三", "周四", "周五", "周六", "周日" };
+	private String[] dayList = { "周一", "周二", "周三", "周四", "周五", "周六", "周日" };
 
 	private ViewPager mViewPager;// 用来放置界面切换
 	private PagerAdapter mPagerAdapter;// 初始化View适配器
-	
+
 	// 3个Tab，每个Tab包含一个按钮
 	private LinearLayout mTabClassTable;
-	private LinearLayout mTabSetting;
-	private LinearLayout mTabAbout;
+	private LinearLayout mTabMemo;
+	private LinearLayout mSettingAbout;
 	private Button restore, backup;
 	// 3个按钮
 	private ImageButton mClassTableImg;
+	private ImageButton mMemoImg;
 	private ImageButton mSettingImg;
-	private ImageButton mAboutImg;
-private LayoutInflater mLayoutInflater;
+	private ImageButton mMemoNewImg;
+	private LayoutInflater mLayoutInflater;
+	private GetCurrentDate getDate;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setTitle("欢迎查看课程表");
+		
 		mContext = this;
-
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.activity_show_table);// 加载首页显示一周课程
-		 mLayoutInflater = getLayoutInflater();
-		 
-		initView();
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
+				R.layout.memo_title);
+		mLayoutInflater = getLayoutInflater();
+		setMyTitleClass();
 		
-	listViewClick();
 
 		
+		
+		initView();
+
+		listViewClick();
+		mClassTableImg.setImageResource(R.drawable.tab_classtable_pressed);
 
 	}
 
@@ -147,53 +163,48 @@ private LayoutInflater mLayoutInflater;
 	@Override
 	protected void onResume() {
 		super.onResume();
-	initView();
-	listViewClick();
-		
-
+		initView();
+		listViewClick();
 
 	}
-/**
- * ListView onItemClicklistener
- */
-	private void listViewClick(){
-		
+
+	/**
+	 * ListView onItemClicklistener
+	 */
+	private void listViewClick() {
+
 		initViewPage();
 		// 点击后传递该行到查看详情表
-				listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 
-						int i = position + 1;
+				int i = position + 1;
 
-						// setTitle("点击第"+i+"个项目");
-						Intent intent = new Intent(mContext, ShowDetail.class);
-						Bundle bundle = new Bundle();
-						bundle.putInt("id", i);
+				// setTitle("点击第"+i+"个项目");
+				Intent intent = new Intent(mContext, ShowDetail.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("id", i);
 
-						intent.putExtras(bundle);
-						startActivity(intent);
+				intent.putExtras(bundle);
+				startActivity(intent);
 
-				
-					}
-				});
+			}
+		});
 		initEvent();
-		
 
 	}
-	
-	
-	
+
 	// 数据恢复
 	private void dataRecover() {
-	
+
 		new BackupTask(this).execute("restroeDatabase");
 	}
 
 	// 数据备份
 	private void dataBackup() {
-	
+
 		new BackupTask(this).execute("backupDatabase");
 	}
 
@@ -203,12 +214,11 @@ private LayoutInflater mLayoutInflater;
 
 	private void initEvent() {
 		mTabClassTable.setOnClickListener(this);
-		mTabSetting.setOnClickListener(this);
-		mTabAbout.setOnClickListener(this);
+		mTabMemo.setOnClickListener(this);
+		mSettingAbout.setOnClickListener(this);
 		backup.setOnClickListener(this);
 		restore.setOnClickListener(this);
-		
-	
+		mMemoNewImg.setOnClickListener(this);
 
 		mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
 			/**
@@ -221,20 +231,20 @@ private LayoutInflater mLayoutInflater;
 				case 0:
 					resetImg();
 					mPagerAdapter.notifyDataSetChanged();
-					
+				setMyTitleClass();
 					mClassTableImg
 							.setImageResource(R.drawable.tab_classtable_pressed);
 
 					break;
 				case 1:
 					resetImg();
-					mSettingImg
-							.setImageResource(R.drawable.tab_setting_pressed);
-
+					mMemoImg.setImageResource(R.drawable.tab_memo_pressed);
+					setMyTitleMemo();
 					break;
 				case 2:
 					resetImg();
-					mAboutImg.setImageResource(R.drawable.tab_about_pressed);
+					mSettingImg
+							.setImageResource(R.drawable.tab_setting_pressed);
 					break;
 
 				default:
@@ -263,12 +273,12 @@ private LayoutInflater mLayoutInflater;
 		// 初始化四个LinearLayout
 		mTabClassTable = (LinearLayout) findViewById(R.id.id_tab_class);
 
-		mTabAbout = (LinearLayout) findViewById(R.id.id_tab_about);
-		mTabSetting = (LinearLayout) findViewById(R.id.id_tab_setting);
+		mSettingAbout = (LinearLayout) findViewById(R.id.id_tab_setting);
+		mTabMemo = (LinearLayout) findViewById(R.id.id_tab_memo);
 		// 初始化四个按钮
 		mClassTableImg = (ImageButton) findViewById(R.id.id_tab_classtable_img);
+		mMemoImg = (ImageButton) findViewById(R.id.id_tab_memo_img);
 		mSettingImg = (ImageButton) findViewById(R.id.id_tab_setting_img);
-		mAboutImg = (ImageButton) findViewById(R.id.id_tab_about_img);
 
 	}
 
@@ -276,52 +286,50 @@ private LayoutInflater mLayoutInflater;
 	 * 初始化ViewPage
 	 */
 	private void initViewPage() {
-		
+
 		// Initialize 3 tabs and listview and button, don't it in the oncreate
-	
-	SpecialAdapter adapter;
+
+		SpecialAdapter adapter;
 		View tab01 = mLayoutInflater.inflate(R.layout.tab01, null);
 		View tab02 = mLayoutInflater.inflate(R.layout.tab02, null);
 		View tab03 = mLayoutInflater.inflate(R.layout.tab03, null);
 		listView = (ListView) tab01.findViewById(R.id.daylist);// 显示一周列表
-		
-		List<Map<String, Object>> data=null;
+
+		List<Map<String, Object>> data = null;
 		data = getData();
-		
-		
-		
-		
+
 		adapter = new SpecialAdapter(this, data, R.layout.main_list_item,
 				new String[] { "day", "morning", "afternoon", "evening" },
 				new int[] { R.id.day, R.id.morning, R.id.afternoon,
 						R.id.evening });
-	
+
 		listView.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
 		listView.invalidate();
-		backup = (Button) tab02.findViewById(R.id.dataBackup);
-		restore = (Button) tab02.findViewById(R.id.dataRestore);
+		backup = (Button) tab03.findViewById(R.id.dataBackup);
+		restore = (Button) tab03.findViewById(R.id.dataRestore);
+		mMemoNewImg=(ImageButton)tab02.findViewById(R.id.memo_new);
 		mViews.clear();
 		mViews.add(tab01);
 		mViews.add(tab02);
 		mViews.add(tab03);
-		
+
 		// 适配器初始化并设置
 		mPagerAdapter = new PagerAdapter() {
 
 			@Override
 			public void destroyItem(ViewGroup container, int position,
 					Object object) {
-			
+
 				container.removeView((View) object);
 
 			}
 
 			@Override
 			public Object instantiateItem(ViewGroup container, int position) {
-				
+
 				container.addView(mViews.get(position));
-				 
+
 				return mViews.get(position);
 			}
 
@@ -336,14 +344,14 @@ private LayoutInflater mLayoutInflater;
 
 				return mViews.size();
 			}
-			
+
 			@Override
 			public int getItemPosition(Object object) {
 				return POSITION_NONE;
 			}
-			
+
 		};
-		
+
 		mViewPager.setAdapter(mPagerAdapter);
 
 	}
@@ -357,43 +365,47 @@ private LayoutInflater mLayoutInflater;
 		switch (arg0.getId()) {
 		case R.id.id_tab_class:
 			mViewPager.setCurrentItem(0);
+			
+			setMyTitleClass();
 			resetImg();
 			mClassTableImg.setImageResource(R.drawable.tab_classtable_pressed);
 			break;
-		case R.id.id_tab_about:
-			mViewPager.setCurrentItem(2);
-			resetImg();
-			mAboutImg.setImageResource(R.drawable.tab_about_pressed);
-			break;
 		case R.id.id_tab_setting:
-			mViewPager.setCurrentItem(1);
+			mViewPager.setCurrentItem(2);
 			resetImg();
 			mSettingImg.setImageResource(R.drawable.tab_setting_pressed);
 			break;
-			//Data backup
+		case R.id.id_tab_memo:
+			mViewPager.setCurrentItem(1);
+			setMyTitleMemo();
+			resetImg();
+			mMemoImg.setImageResource(R.drawable.tab_memo_pressed);
+			break;
+		// Data backup
 		case R.id.dataBackup:
-			dataBackup();	
-			View list=mViewPager.findViewWithTag("classTable");
+			dataBackup();
+			View list = mViewPager.findViewWithTag("classTable");
 
-			
-			
-			
 			Toast.makeText(ShowTable.this, "数据已备份到ScheduleBackup目录下",
 					Toast.LENGTH_SHORT).show();
 			break;
 
 		case R.id.dataRestore:
-//data Recovery
+			// data Recovery
 			dataRecover();
-		
-			
+
 			initView();
 			listViewClick();
 
 			Toast.makeText(ShowTable.this, "数据已恢复", Toast.LENGTH_SHORT).show();
 			break;
-		default:
-			System.out.println(arg0.getId());
+		case R.id.memo_new:
+			Intent intent=new Intent(mContext,MemoNew.class);
+			startActivity(intent);
+//			ShowTable.this.finish();
+			
+		default:				
+			
 			break;
 		}
 	}
@@ -403,9 +415,46 @@ private LayoutInflater mLayoutInflater;
 	 */
 	private void resetImg() {
 		mClassTableImg.setImageResource(R.drawable.tab_classtable);
+		mMemoImg.setImageResource(R.drawable.tab_memo);
 		mSettingImg.setImageResource(R.drawable.tab_setting);
-		mAboutImg.setImageResource(R.drawable.tab_about);
 
 	}
+	
+	/**
+	 * setMyTitle for the classtable page to change the tile by using a customized tile
+	 */
 
+	public void setMyTitleClass(){
+		tvMemoTitleDate = (TextView) findViewById(R.id.memo_title_date);
+		tvMemoTitleWeek = (TextView) findViewById(R.id.memo_title_week);
+		tvMemoTitleTime = (TextView) findViewById(R.id.memo_title_time);
+		getDate=new GetCurrentDate();
+		//Show the title as below format
+		tvMemoTitleDate.setText("今天是"+getDate.getWeek());
+		tvMemoTitleWeek.setText(getDate.getDate());
+		tvMemoTitleDate.setGravity(Gravity.LEFT);
+		tvMemoTitleWeek.setGravity(Gravity.LEFT);
+		
+		tvMemoTitleDate.setTextColor(Color.parseColor("#00bfa5"));
+		tvMemoTitleWeek.setVisibility(View.VISIBLE);
+		tvMemoTitleDate.setTextSize(20);
+		tvMemoTitleTime.setVisibility(View.INVISIBLE);
+		
+		
+	}
+	/**
+	 * set title for the memo page
+	 */
+public void setMyTitleMemo(){
+	tvMemoTitleDate = (TextView) findViewById(R.id.memo_title_date);
+	tvMemoTitleWeek = (TextView) findViewById(R.id.memo_title_week);
+	tvMemoTitleDate.setText("备忘录");
+	tvMemoTitleDate.setGravity(Gravity.CENTER);
+	tvMemoTitleDate.setTextColor(Color.parseColor("#00bfa5"));
+	tvMemoTitleWeek.setVisibility(View.INVISIBLE);
+	tvMemoTitleDate.setTextSize(30);
+	
+	
+	
+}
 }

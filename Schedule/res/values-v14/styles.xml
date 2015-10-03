@@ -7,6 +7,14 @@
     -->
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- API 14 theme customizations can go here. -->
+        
+ <item name="android:windowActionBar">false</item> 
+
+
+
+
+        <item name="android:windowTitleSize">45dip</item>  
+        
     </style>
 
 </resources>
