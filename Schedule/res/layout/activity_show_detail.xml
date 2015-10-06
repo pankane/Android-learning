@@ -3,20 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/list_down_frame" >
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        
-        android:layout_gravity="top"
-          android:textSize="30sp"
-        android:textStyle="bold"
-       
-        android:gravity="center"
-        android:background="#b2dfdb"
-        ></TextView>
+    
         
 
 

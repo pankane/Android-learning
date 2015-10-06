@@ -45,6 +45,42 @@ public class GetCurrentDate {
 		return day;
 
 	}
+	
+	public String getWeekByID(int id){
+		String day=null;
+		
+		switch (id) {
+		case 1:
+			day = "一";
+			break;
+		case 2:
+			day = "二";
+			break;
+		case 3:
+			day = "三";
+			break;
+		case 4:
+			day = "四";
+			break;
+		case 5:
+			day = "五";
+			break;
+		case 6:
+			day = "六";
+			break;
+		case 7:
+			day = "日";
+
+			break;
+
+		default:
+			break;
+			
+		}
+		return day;
+		
+	}
+	
 
 	public String getDate() {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");

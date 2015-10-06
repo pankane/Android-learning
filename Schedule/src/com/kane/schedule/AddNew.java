@@ -189,8 +189,8 @@ public class AddNew extends Activity {
 							Toast.LENGTH_SHORT).show();
 					return;
 				} else {
-					MyDatabase dbHelper = new MyDatabase(AddNew.this,
-							"classList_db", null, 1);
+					MyDatabase dbHelper = new MyDatabase(AddNew.this
+							);
 					// 得到一个可写的SQLiteDatabase对象
 					SQLiteDatabase db = dbHelper.getWritableDatabase();
 					ContentValues classDetail = new ContentValues();

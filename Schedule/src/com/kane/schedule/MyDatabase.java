@@ -1,10 +1,12 @@
 package com.kane.schedule;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
@@ -14,37 +16,114 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
 public class MyDatabase extends SQLiteOpenHelper {
+	private final static String MEMO_TABLE_NAME = "memoTable";
+	private final static String CLASS_TABLE_NAME = "classTable";
+	private final static String DB_NAME = "classList_db";
+	public final static String MEMO_ID = "_id";
+	public final static String MEMO_CONTENT = "content";
+	public final static String MEMO_TIME = "time";
+	public final static String MEMO_DATE = "date";
+	public final static String CLASS_TABLE_ID = "_id";
+	public final static String CLASS_TABLE_DAY = "day";
+	public final static String CLASS_TABLE_TITLE = "classTitle";
+	public final static String CLASS_TABLE_ADDRESS = "address";
+	public final static String CLASS_TABLE_STARTTIME = "startTime";
+	public final static String CLASS_TABLE_ENDTIME = "endTime";
+	public final static String CLASS_TABLE_CLASSHOUR = "classHour";
+	private static final String CREATE_MEMO_TABLE_SQL = "CREATE TABLE IF NOT EXISTS "
+			+ MEMO_TABLE_NAME + " (" + MEMO_ID
+			+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + MEMO_CONTENT + " TEXT,"
+			+ MEMO_TIME + " int," + MEMO_DATE + " int)";
 
-	public MyDatabase(Context context, String name, CursorFactory factory,
-			int version) {
+	private static final String CREATE_CLASS_TABLE_SQL = "CREATE TABLE IF NOT EXISTS "
+			+ CLASS_TABLE_NAME + " (" + CLASS_TABLE_ID
+			+ "ID INTEGER PRIMARY KEY AUTOINCREMENT," + CLASS_TABLE_DAY
+			+ " TEXT,"+ CLASS_TABLE_TITLE+"  TEXT, " + CLASS_TABLE_ADDRESS + " TEXT,"
+			+ CLASS_TABLE_STARTTIME + " VARCHAR(20)," + CLASS_TABLE_ENDTIME
+			+ " VARCHAR(20), " + CLASS_TABLE_CLASSHOUR + " INT)";
+
+	public MyDatabase(Context context) {
 		// 创建一个名为classList_db的数据库
-		super(context, "classList_db", null, 1);
-		// TODO Auto-generated constructor stub
+		super(context, DB_NAME, null, 1);
+
 	}
 
 	public MyDatabase(Context context, String name, CursorFactory factory,
 			int version, DatabaseErrorHandler errorHandler) {
 		super(context, name, factory, version, errorHandler);
-		// TODO Auto-generated constructor stub
+
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 
 		// 执行时，若表不存在，则创建之，注意SQLite数据库中必须有一个_id的字段作为主键，否则查询时将报错
-		String sql = "create table classTable (_id integer primary key autoincrement, day text, classTitle text, " +
-				"address text, startTime varchar(20), endTime varchar(20), classHour int)";
-		db.execSQL(sql);
+
+		db.execSQL(CREATE_CLASS_TABLE_SQL);
+		
+		db.execSQL(CREATE_MEMO_TABLE_SQL);
+		
 
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
+		db.execSQL("DROP TABLE IF EXISTS "+MEMO_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+CLASS_TABLE_NAME);
 
 	}
 
+	/**插入备忘录
+	 * */
 	
+	public long insertMemo(String content, String date, String time) {
+		// 实例化一个 SQLiteDatabase 对象
+		SQLiteDatabase db = this.getWritableDatabase();
+		/*
+		 * 将需要修改的数据放在 ContentValues 对象中 ContentValues
+		 * 是以键值对形式储存数据，其中键是数据库的列名，值是列名对应的数据
+		 */
+		ContentValues cv = new ContentValues();
+		cv.put(MEMO_TIME, time);
+		cv.put(MEMO_CONTENT, content);
+		cv.put(MEMO_DATE, date);
+		// insert()方法：插入数据，成功返回行数，否则返回-1
+		long rowid = db.insert(MEMO_TABLE_NAME, null, cv);
+		db.close();
+		return rowid;
+	}
+	public Cursor selectMemo(){
+		// 实例化一个 SQLiteDatabase 对象
+		SQLiteDatabase db = this.getReadableDatabase();				
+		// 获取一个指向数据库的游标，用来查询数据库
+		Cursor cursor = db.query(MEMO_TABLE_NAME, null, null, null, null, null, null);
+		return cursor;
+	}
 	
-
+	public int updateMemo(String id,String date, String content,String time){
+		SQLiteDatabase db = this.getWritableDatabase();
+		String where = MEMO_ID+"=?";
+		String[] whereValues = {id};
+		ContentValues cv = new ContentValues();
+		cv.put(MEMO_DATE, date);
+		cv.put(MEMO_CONTENT, content);
+		cv.put(MEMO_TIME, time);
+		
+		// update()方法：根据条件更新数据库，cv保存更新后的数据，where为更新条件
+		int numRow = db.update(MEMO_TABLE_NAME, cv, where, whereValues);
+		db.close();
+		return numRow;
+	}
+	
+	public boolean deleteMemo(String id){
+		SQLiteDatabase db = this.getWritableDatabase();
+		String where = MEMO_ID+"=?";
+		String[] whereValues = {id};
+		// delete方法：根据条件删除数据，where表示删除的条件
+		System.out.println(id);
+		boolean is =  (db.delete(MEMO_TABLE_NAME, where, whereValues) > 0);
+		db.close();
+		return is;
+	}
+	
 }
