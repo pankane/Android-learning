@@ -24,6 +24,7 @@
             android:id="@+id/dataBackup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+             android:background="@drawable/button_flat"
             android:text="数据备份"
             android:textSize="20sp"
   
@@ -35,6 +36,7 @@
             android:id="@+id/dataRestore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+             android:background="@drawable/button_flat"
             android:text="恢复数据"
             android:textSize="20sp"
        

@@ -24,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/addnew"
+        android:background="@drawable/button_flat"
         android:text="添加课程"
         ></Button>
     

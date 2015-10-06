@@ -68,7 +68,7 @@ public class SpecialAdapter extends SimpleAdapter {
 	public void setViewColor(int position,View view){
 		
 		int colorPos = position % colors.length;
-
+		
 		if (colorPos == 1)
 
 			view.setBackgroundColor(Color.argb(30, 192, 192, 192)); // —’…´…Ë÷√
@@ -121,7 +121,7 @@ public class SpecialAdapter extends SimpleAdapter {
 
 			if (dayText.getText() == day) {
 
-				view.setBackgroundColor(Color.argb(50, 192, 192, 192));
+				view.setBackgroundColor(Color.argb(250, 192, 192, 192));
 
 			}
 
