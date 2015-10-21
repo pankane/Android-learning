@@ -73,7 +73,6 @@ public class ShowTable extends Activity implements android.view.View.OnClickList
 		setContentView(R.layout.activity_show_table);// 加载首页显示一周课程
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.memo_title);
 		mLayoutInflater = getLayoutInflater();
-		// setMyTitleClass();
 		initView();
 		setTitle = new SetPageTitle(tvMemoTitleDate, tvMemoTitleWeek, tvMemoTitleTime, lvMemoTitle);
 		setTitle.setClassTableTitle();
@@ -228,10 +227,10 @@ public class ShowTable extends Activity implements android.view.View.OnClickList
 				int currentItem = mViewPager.getCurrentItem();
 				switch (currentItem) {
 				case 0:
+					classListLoad();
 					resetImg();
 					mPagerAdapter.notifyDataSetChanged();
 					setTitle.setClassTableTitle();
-					classListLoad();
 					mClassTableImg.setImageResource(R.drawable.tab_classtable_pressed);
 					break;
 				case 1:
